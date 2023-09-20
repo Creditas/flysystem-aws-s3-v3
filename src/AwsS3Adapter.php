@@ -635,7 +635,17 @@ class AwsS3Adapter extends AbstractAdapter implements CanOverwriteFiles
     {
         $options = $this->options;
 
-        if ($visibility = $config->get('visibility')) {
+        $bucketAcl = array(
+            'creditoo-us' => 'bucket-owner-full-control'
+        );
+
+        $changedAcl = isset($bucketAcl[$this->bucket]);
+
+        if ($changedAcl) {
+            $options['ACL'] = $bucketAcl[$this->bucket];
+        }
+
+        if (!isset($options['ACL']) && $visibility = $config->get('visibility')) {
             // For local reference
             $options['visibility'] = $visibility;
             // For external reference
